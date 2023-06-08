@@ -13,4 +13,6 @@ You can run "make test" to perform a few tests where output from srch and find(1
 
 There is no "make install" for the moment.
 
+In the manual page srch.1 (or in srch.man which is preformatted) you will find lots of examples and speed comparisons with find(1).
+
 Srch is supported on Linux, FreeBSD, OpenBSD, MacOS, AIX, HP-UX, Solaris, Windows.  You can even compile it on a matching FreeBSD release and run it under the hood (in the system shell) of NetApp to search the various virtual file servers under the /clus mount point.
