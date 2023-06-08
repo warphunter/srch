@@ -1,0 +1,28 @@
+#!/bin/ksh
+# This is a simple "find <startdir> -maxdepth <depth>"
+
+if [ $# -ne 2 ]; then
+    print "Usage: ${0##*/} <startdir> <depth>"
+    exit 1
+fi
+startdir="$1"
+depth=$2
+
+function traverse {
+    for file in "$1"/* "$1"/.??*; do
+        case "$file" in
+	    */\*|*/.\?\?\*) continue
+        esac
+        print "$file"
+        if [ -d "$file" -a ! -h "$file" ]; then
+            if [ depth -gt 1 ]; then
+        	(( depth-=1 ))
+        	traverse "$file"
+        	(( depth+=1 ))
+            fi
+        fi
+  done
+}
+
+print "$startdir"
+traverse "$startdir"

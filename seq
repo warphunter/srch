@@ -1,0 +1,12 @@
+#!/bin/ksh
+
+if [ $# -ne 2 ]; then
+    print "Usage: ${0##*/} <from> <to>"
+    exit 1
+fi
+
+print "$1" "$2" | awk '{
+  for (i = $1; i <= $2; i++) {
+    print i
+  }
+}'

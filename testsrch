@@ -1,0 +1,168 @@
+#!/bin/ksh
+
+export PATH=/bin:/usr/bin:
+
+find=find
+srch=srch
+
+test $HOME = / && HOME=/usr
+dirs="
+/usr/bin
+/usr/lib
+/usr/local
+$HOME
+"
+
+continue=FALSE
+while getopts cd: opt; do
+    case $opt in
+	c) continue=TRUE;;
+	d) dirs=$OPTARG;;
+	h) print "Usage: ${0##*/} [-d dir] [-c] [first test] [last test]"; exit 0
+    esac
+done
+shift `expr $OPTIND - 1`
+
+findtest[1]="$find \$dir 2>/dev/null"
+case $(uname) in
+    Linux|*BSD|Darwin)
+	#findtest[2]="$find \$dir -path '*sys/time.h' 2>/dev/null"
+	findtest[2]="$find \$dir -path '*lib/ld*' 2>/dev/null"
+	findtest[3]="$find \$dir -maxdepth 1 2>/dev/null"
+	findtest[4]="$find \$dir -maxdepth 2 2>/dev/null"
+	findtest[5]="$find \$dir -maxdepth 3 2>/dev/null"
+	;;
+    *)
+        #findtest[2]="$find-path \$dir sys/time.h 2>/dev/null"
+        findtest[2]="$find-path \$dir lib/ld 2>/dev/null"
+	findtest[3]="find-maxdepth \$dir 1 2>/dev/null"
+	findtest[4]="find-maxdepth \$dir 2 2>/dev/null"
+	findtest[5]="find-maxdepth \$dir 3 2>/dev/null"
+esac
+findtest[6]="$find \$dir -type f 2>/dev/null"
+findtest[7]="$find \$dir -type d 2>/dev/null"
+findtest[8]="$find \$dir -type l 2>/dev/null"
+findtest[9]="$find \$dir -type d -name bin 2>/dev/null"
+findtest[10]="$find \$dir -name '*libc*' 2>/dev/null"
+findtest[11]="$find \$dir -name '*[rR][eE][aA][dD][mM][eE]*' 2>/dev/null"
+findtest[12]="$find \$dir -type d \( -name java -prune -o -print \) 2>/dev/null"
+findtest[13]="$find \$dir -type d \( -name X11\* -prune -o -print \) 2>/dev/null"
+case $(uname) in
+    Linux)
+	awk=awk
+	findtest[14]="$find \$dir -path '*java*' 2>/dev/null"
+	findtest[15]="$find \$dir -printf '%s %p\n' 2>/dev/null | env LC_ALL=C sort -n | tail -5"
+	findtest[16]="$find \$dir -printf '%TY-%Tm-%Td %TT %p\n' 2>/dev/null | env LC_ALL=C sort | tail -5"
+	findtest[17]="$find \$dir -type d -print0 2>/dev/null | xargs -0n1 ksh -c 'echo \"\$(ls -AU \"\$0\" 2>/dev/null|wc -l) \$0\"' | env LC_ALL=C sort -n | tail -5"
+	findtest[18]="$find \$dir -type d -empty 2>/dev/null"
+	findtest[19]="$find \$dir -size 362200c 2>/dev/null"
+	srchtest[19]="$srch -s362200 \$dir 2>/dev/null"
+	;;
+    AIX|SunOS)
+	awk=nawk
+	findtest[14]="$find-path \$dir java 2>/dev/null"
+	findtest[15]="$find \$dir -ls 2>/dev/null | awk '{size=\$7; \$1=\$2=\$3=\$4=\$5=\$6=\$7=\$8=\$9=\$10=\"\"; print size \$0}' | env LC_ALL=C sort -n | tail -5"
+	findtest[16]="$find \$dir 2>/dev/null | perl -ne 'chop; \$mtime=(lstat(\$_))[9]; (\$sec,\$min,\$hour,\$mday,\$mon,\$year)=(localtime(\$mtime))[0..5]; printf(\"%d-%02d-%02d %02d:%02d:%02d %s\\n\", \$year+1900, \$mon+1, \$mday, \$hour, \$min, \$sec, \$_)' | env LC_ALL=C sort -n | tail -5"
+	#findtest[17]="$find \$dir -type d 2>/dev/null | xargs -n1 ksh -c 'echo \"\$(ls -AU \"\$0\" 2>/dev/null|wc -l) \$0\"' | env LC_ALL=C sort -n | tail -5"
+	findtest[17]="$find \$dir -type d -exec ksh -c 'echo \$(ls -A \$0 2>/dev/null|wc -l) \$0' {} \; 2>/dev/null | env LC_ALL=C sort -n | tail -5"
+	findtest[18]="$find \$dir -type d -exec ksh -c 'test -r \$0 || exit; test \$(ls -A \$0|wc -l) = 0 && echo \$0' {} \; 2>/dev/null"
+	findtest[19]="$find \$dir -size 31488c 2>/dev/null"
+	srchtest[19]="$srch -s31488 \$dir 2>/dev/null"
+	;;
+    HP-UX)
+	awk=awk
+	findtest[14]="$find \$dir -path '*java*' 2>/dev/null"
+	findtest[15]="$find \$dir 2>/dev/null | perl -ne 'chop; \$size=(lstat(\$_))[7]; printf(\"%d %s\\n\", \$size, \$_)' | env LC_ALL=C sort -n | tail -5"
+	findtest[16]="$find \$dir 2>/dev/null | perl -ne 'chop; \$mtime=(lstat(\$_))[9]; (\$sec,\$min,\$hour,\$mday,\$mon,\$year)=(localtime(\$mtime))[0..5]; printf(\"%d-%02d-%02d %02d:%02d:%02d %s\\n\", \$year+1900, \$mon+1, \$mday, \$hour, \$min, \$sec, \$_)' | env LC_ALL=C sort -n | tail -5"
+	# Need to use ls -a and tail away "." and ".." because ls -A sometimes doesn't list files starting with a ".".
+	findtest[17]="$find \$dir -type d -exec ksh -c 'echo \$(ls -a \$@ 2>/dev/null|tail +3|wc -l) \$@' {} \; 2>/dev/null | env LC_ALL=C sort -n | tail -5"
+	findtest[18]="$find \$dir -type d -exec ksh -c 'set -- \$(ls -a \$@ 2>/dev/null|tail +3|wc -l); test \$1 = 0 && echo \$@' {} \; 2>/dev/null"
+	findtest[19]="$find \$dir -size 70496c 2>/dev/null"
+	srchtest[19]="$srch -s70496 \$dir 2>/dev/null"
+	;;
+    Darwin)
+	awk=awk
+	findtest[14]="$find \$dir -path '*java*' 2>/dev/null"
+	findtest[15]="$find \$dir -ls | awk '{size=\$7; \$1=\$2=\$3=\$4=\$5=\$6=\$7=\$8=\$9=\$10=\"\"; print size \$0}' | env LC_ALL=C sort -n | tail -5"
+	findtest[16]="$find \$dir -print0 | xargs -0 stat -f'%Sm %N' 2>/dev/null | awk '{split(\$0,t,\" \"); printf(\"%s-%02d-%02d %s %s\\n\", t[4], (index(\"JanFebMarAprMayJunJulAugSepOctNovDec\", t[1]) + 2) / 3, t[2], t[3], \$NF)}' | env LC_ALL=C sort | tail -5"
+	findtest[17]="$find \$dir -type d -print0 | xargs -0n1 ksh -c 'echo \$(ls -A \"\$0\" 2>/dev/null|wc -l) \"\$0\"' | env LC_ALL=C sort -n | tail -5"
+	findtest[18]="$find \$dir -type d -empty"
+	findtest[19]="$find \$dir -size 31488c 2>/dev/null"
+	srchtest[19]="$srch -s31488 \$dir 2>/dev/null"
+	;;
+    *)
+	print Some tests not implemented for $(uname) - bailing out...
+	exit 1
+esac
+if [ -z "$awk" ]; then
+    print awk variable must be set in case..esac for later use - bailing out...
+    exit 1
+fi
+findtest[20]="$find \$dir -user root 2>/dev/null"
+findtest[21]="$find \$dir -group 0 2>/dev/null"
+
+srchtest[1]="$srch \$dir 2>/dev/null"
+#srchtest[2]="$srch -a sys/time.h \$dir 2>/dev/null"
+srchtest[2]="$srch -a lib/ld \$dir 2>/dev/null"
+srchtest[3]="$srch -m1 \$dir 2>/dev/null"
+srchtest[4]="$srch -m2 \$dir 2>/dev/null"
+srchtest[5]="$srch -m3 \$dir 2>/dev/null"
+srchtest[6]="$srch -f \$dir 2>/dev/null"
+srchtest[7]="$srch -d \$dir 2>/dev/null"
+srchtest[8]="$srch -l \$dir 2>/dev/null"
+srchtest[9]="$srch -dn ^bin\$ \$dir 2>/dev/null"
+srchtest[10]="$srch -n libc \$dir 2>/dev/null"
+srchtest[11]="$srch readme \$dir 2>/dev/null"
+srchtest[12]="$srch -dE java \$dir 2>/dev/null"
+srchtest[13]="$srch -de ^X11 \$dir 2>/dev/null"
+srchtest[14]="$srch -an java \$dir 2>/dev/null"
+srchtest[15]="$srch -F5 \$dir 2>/dev/null"
+srchtest[16]="$srch -M5 \$dir 2>/dev/null"
+srchtest[17]="$srch -D5 \$dir 2>/dev/null"
+srchtest[18]="$srch -z \$dir 2>/dev/null"
+srchtest[20]="$srch -uroot \$dir 2>/dev/null"
+srchtest[21]="$srch -g0 \$dir 2>/dev/null"
+
+first=${1:-1}
+last=${2:-${#findtest[*]}}
+for dir in $dirs; do
+    print ==================================================
+
+    for i in $(seq $first $last); do
+        print -r FIND-TEST$i: dir=$dir, ${findtest[$i]}
+	case $i in
+	    15) findresult[$i]=$(eval ${findtest[$i]}|awk '{sum+=$1} END {print sum}')
+		;;
+	    16|17) findresult[$i]=$(eval ${findtest[$i]}|$awk '{sub(" ","+", $1); gsub(":","+", $2); sum+=$1+$2} END {print sum}')
+		;;
+	    *)  findresult[$i]=$(eval ${findtest[$i]}|wc -l)
+	esac
+	print FIND-TEST$i result: ${findresult[$i]}
+    done
+
+    print --------------------------------------------------
+
+    for i in $(seq $first $last); do
+        print SRCH-TEST$i: dir=$dir, ${srchtest[$i]}
+	case $i in
+	    15) srchresult[$i]=$(eval ${srchtest[$i]}|awk '{sum+=$1} END {print sum}')
+		;;
+	    16|17) srchresult[$i]=$(eval ${srchtest[$i]}|$awk 'sub(" ","+", $1); {gsub(":","+", $2); sum+=$1+$2} END {print sum}')
+		;;
+	    *)  srchresult[$i]=$(eval ${srchtest[$i]}|wc -l)
+	esac
+	print SRCH-TEST$i result: ${srchresult[$i]}
+    done
+
+    for i in $(seq $first $last); do
+	#print "[${findresult[$i]}]"
+	if [ "${findresult[$i]}" != "${srchresult[$i]}" ]; then
+	    print "===> TEST $i FAILURE:"
+	    print "${findtest[$i]}" "(${findresult[$i]})" "!=" "${srchtest[$i]}" "(${srchresult[$i]})"
+	    test $continue = FALSE && exit 1
+	fi
+	print "===> TEST$i okay."
+    done
+
+    print
+done
