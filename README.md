@@ -8,7 +8,7 @@ Srch consists of one single 2700 lines C source file which can be compiled for U
 
 To build it for Unix/Linux, you just need gcc(1) and make(1).  Just run "make".
 
-To build it for Windows (on a Linux machine), run "make win".  You need to install mingw-w64, mingw-w64-common and mingw-w64-x86-64-dev to be able to compile for 64-bit Windows.
+To build it for Windows (on a Linux machine), run "make win".  You need to have mingw-w64, mingw-w64-common and mingw-w64-x86-64-dev installed to be able to compile for 64-bit Windows, and additionally mingw-w64-i686-dev to compile for 32-bit.
 
 You can run "make test" to perform a few tests where output from srch and find(1) are compared.
 
