@@ -1,6 +1,6 @@
 # srch
 
-If you're happy with the speed and functionality of the standard, single threaded find(1) included in Unix/Linux, you probably won't be interested in reading further.
+If you're happy with the speed and functionality of the standard, single-threaded find(1) included in Unix/Linux, you probably won't be interested in reading further.
 
 Srch is the Swiss Army knife for exploring file tree structures quickly. Srch is written to be a fast, multi-threaded alternative to find(1), with simplified syntax and extended functionality.  While  find(1)  is  single-threaded, srch will by default use up to 8 CPU cores to search for files in parallel.  The basic idea is to handle each subdirectory as an independent unit, and feed a number of threads with these units.  Provided the underlying storage system is fast enough, this scheme will speed up file search considerably, and ultimately minimize the need for locate(1).
 
