@@ -8,7 +8,7 @@ It might be the fastest publicly available file search tool :)
 
 Srch consists of one single 2700 lines C source file which can be compiled for Unix/Linux.  Building it for Windows requires a little more, and the necessary source code is located in the "win" subdirectory.
 
-To build it for Unix/Linux, you just need gcc(1) and make(1).  Just run "make".
+To build it for Unix/Linux, you just need gcc(1) and make(1).  Just run "make".  On Linux you can even avoid make(1), and compile it running "gcc -O2 srch.c -o srch -l pthread".
 
 To build it for Windows (on a Linux machine), run "make win".  You need to have mingw-w64, mingw-w64-common and mingw-w64-x86-64-dev installed to be able to compile for 64-bit Windows, and additionally mingw-w64-i686-dev to compile for 32-bit.
 
