@@ -14,7 +14,7 @@ To build it for Windows (on a Linux machine), run "make win".  You need to have 
 
 You can run "make test" to perform a few tests where output from srch and find(1) are compared.
 
-There is no "make install" for the moment.
+Yuo can run "make install" to copy the binary to /usr/local/bin and the man page to /usr/local/man/man1.
 
 In the manual page srch.1 (or in srch.man which is preformatted) you will find lots of examples and speed comparisons with find(1).
 
