@@ -1,0 +1,22 @@
+#!/bin/ksh
+# This is a very simple "find <startdir> -path <name>" to be used for testing "find" versions without the -path option.
+
+if [ $# -ne 2 ]; then
+    print "Usage: ${0##*/} <startdir> <name>"
+    exit 1
+fi
+startdir="$1"
+name=$2
+
+function traverse {
+    for file in "$1"/* "$1"/.[!.]*; do
+        case "$file" in
+	    */\*|*/.\[\!.\]\*) continue
+        esac
+        [ "${file##*$name}" != "$file" ] && print "$file"
+        [ -d "$file" -a ! -h "$file" ] && traverse "$file"
+    done
+}
+
+[ "${startdir##*$name}" != "$startdir" ] && print "$startdir"
+traverse "$startdir"
