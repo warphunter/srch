@@ -18,4 +18,4 @@ You can run "make install" to copy the binary to /usr/local/bin and the man page
 
 In the manual page srch.1 (or in srch.man which is preformatted), you will find lots of examples and speed comparisons with find(1).
 
-Srch is supported on Linux, FreeBSD, OpenBSD, MacOS, AIX, HP-UX, Solaris, Windows.  You can use MinGW on Linux to compile it for Windows, or Cygwin directly on Windows.  You can even compile it on a matching FreeBSD release and run it under the hood (in the system shell) of a NetApp cDOT node, and search the various virtual file servers under the /clus mount point.
+Srch is supported on Linux, FreeBSD, OpenBSD, MacOS, AIX, HP-UX, Solaris, Windows.  You can use MinGW on Linux to compile it for Windows, or Cygwin directly on Windows.  You can even compile it on a matching FreeBSD release and run it under the hood (in the system shell) of a NetApp cDOT node.  To find the right FreeBSD version, you can run "file /bin/cat" in the NetApp system shell. After copying the FreeBSD binary to .e.g /var/home/diag/bin which are already included in the PATH, you are ready to search through the various virtual file servers (SVMs) under the /clus mount point.
