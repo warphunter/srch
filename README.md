@@ -16,6 +16,6 @@ You can run "make test" to perform a few tests where output from srch and find(1
 
 You can run "make install" to copy the binary to /usr/local/bin and the man page to /usr/local/share/man/man1 or to /usr/local/man/man1 if the first folder doesn't exist.
 
-In the manual page srch.1 (or in srch.man which is preformatted) you will find lots of examples and speed comparisons with find(1).
+In the manual page srch.1 (or in srch.man which is preformatted), you will find lots of examples and speed comparisons with find(1).
 
 Srch is supported on Linux, FreeBSD, OpenBSD, MacOS, AIX, HP-UX, Solaris, Windows.  You can use MinGW on Linux to compile it for Windows, or Cygwin directly on Windows.  You can even compile it on a matching FreeBSD release and run it under the hood (in the system shell) of a NetApp cDOT node, and search the various virtual file servers under the /clus mount point.
