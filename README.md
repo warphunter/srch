@@ -14,9 +14,9 @@ To build it for Unix/Linux, you just need gcc(1) or clang(1), and make(1).  Defa
 
 To build it for Windows (on a Linux machine), run "make win".  You need to have mingw-w64, mingw-w64-common and mingw-w64-x86-64-dev installed to be able to compile for 64-bit Windows, and additionally mingw-w64-i686-dev to compile for 32-bit.  Srch can also be directly compiled on Windows using Cygwin.
 
-You can run "make test" to perform a few tests where output from srch and find(1) are compared.
+You may run "make test" to perform a few tests where output from srch and find(1) are compared.
 
-You can run "make install" to copy the binary to /usr/local/bin and the man page to /usr/local/share/man/man1 or to /usr/local/man/man1 if the first folder doesn't exist.
+You may run "make install" to copy the binary to /usr/local/bin and the man page to /usr/local/share/man/man1 or to /usr/local/man/man1 if the first folder doesn't exist.
 
 In the manual page srch.1 (or in srch.man which is preformatted), you will find lots of examples and speed comparisons with find(1).
 
