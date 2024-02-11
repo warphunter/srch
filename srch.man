@@ -1,0 +1,875 @@
+SRCH(1)                              General Commands Manual                             SRCH(1)
+
+NAME
+       srch - fast, multi-threaded file search utility like find(1), with extended functionality
+
+SYNOPSIS
+       srch [-t count] [[-n|-i re1|re2|... | -N name] [-a]]
+                 [-e dir ... | -E dir ... | -Z]
+                 [-f] [-d] [-l] [-b] [-c] [-p] [-k]
+                 [-m maxdepth] [-x] [-z] [-j] [-0] [-w] [-H] [-v count]
+                 [-u user ... | -U user ...] [-g group ... | -G group ...]
+                 [-o  days  |  -O  minutes  |  -P tstamp-file]        [-y days | -Y minutes | -W
+       tstamp-file]
+                 [-s [+|-]size[k|m|g|t] | +size[k|m|g|t]:-size[k|m|g|t]]
+                 [-D count | -F count | -M count
+                  | -A count | -L count | -B count | -R count] [-I count]
+                 [-q | -Q] [-X] [-S] [-T] [-V] [-h] [arg1 [arg2] ...]
+
+DESCRIPTION
+       Srch is the Swiss Army knife for exploring file tree structures quickly. Srch is  written
+       to  be a fast, multi-threaded alternative to find(1), with simplified syntax and extended
+       functionality.  While find(1) is single-threaded, srch will by default use up  to  8  CPU
+       cores  to search for files in parallel.  The basic idea is to handle each subdirectory as
+       an independent unit, and feed a number of threads with these units.  Provided the  under‐
+       lying  storage system is fast enough, this scheme will speed up file search considerably,
+       and ultimately minimize the need for locate(1).
+
+OPTIONS
+       -t count
+              Run up to count threads in parallel.
+
+              •  Must be a non-negative integer between 1 and 512.
+
+              •  Defaults to (virtual) CPU count on host, up to 8.
+
+              •  Note that count threads will be created in addition to the main thread, so  the
+                 total thread count will be count+1. The main thread won't do any hard work, and
+                 will be mostly idle.
+
+       -n re1|re2|...
+              Search for file names matching regular expression re1 OR re2 etc.
+
+              •  Extended regular expressions (REG_EXTENDED) are supported.
+
+              •  For an exact match, '^filename$' can be specified ("^filename$" on Windows).
+
+              •  To search for files containing a dot, '\.' or \\. can be specified ("." on Win‐
+                 dows).
+
+              •  Also  consider  option  -N  name  which gives better performance, especially on
+                 large directory structures.
+
+              •  Only one -n option is supported, and it can't be combined with -N/-i.
+
+       -i re1|re2|...
+              Same as -n, but perform case insensitive pattern matching.
+
+              •  This option can't be combined with -N/-n.
+
+       -N name
+              Search for file names matching shell pattern *name* where case is  ignored.   This
+              is usually much faster than -n/-i when searching through millions of files.
+
+              •  This  option  is implemented to be simple and portable, and supports pure ASCII
+                 characters only.
+
+              •  Option -N is default if -n/-i is not given.
+
+              •  This option can't be combined with -n/-i.
+
+              •  Only one -N option is supported.
+
+       -a     Together with option -n/-i/-N, match re or name against all of the directory  ele‐
+              ments  in  the tree structure being traversed, treating '/' as an ordinary charac‐
+              ter, like GNU locate(1).
+
+       -e dir Exclude directories matching dir from traversal.
+
+              •  Extended regular expressions are supported.
+
+              •  Any number of -e options are supported, up to command line limit.
+
+              •  This options can't be combined with -E.
+
+       -E dir Exclude directory dir from traversal.
+
+              •  For simplicity, only exact matches are excluded with this option.
+
+              •  Any number of -E options are supported, up to command line limit.
+
+              •  This options can't be combined with -e.
+
+              •  Hint: Excluding .snapshot is usually desired  on  (the  root  of)  NFS  mounted
+                 shares from NAS where visible snapshots are enabled.
+
+       -Z     Equivalent to -E.snapshot.
+
+              •  Just to save some typing since it is commonly needed on a NAS share.
+
+       -f     Print only ordinary files to stdout.
+
+       -d     Print only directories to stdout.
+
+       -l     Print only symlinks to stdout.
+
+       -b     Print only block special files to stdout.
+
+       -c     Print only character special files to stdout.
+
+       -p     Print only named pipes/fifos to stdout.
+
+       -k     Print only sockets to stdout.
+
+       -m maxdepth
+              Descend at most maxdepth (a positive integer) levels below the start point(s).
+
+              •  This equals the -maxdepth option to GNU find(1).
+
+       -x     Only traverse the file system(s) containing the directory/directories specified.
+
+              •  This equals the -xdev option to find(1).
+
+       -z     Print out empty directories only.
+
+              •  This equals options "-type d -empty" to GNU find(1).
+
+       -j     Prepend filenames with modtime details.
+
+              •  Note that an extra lstat(2) call will be needed on non-directories.
+
+       -0     Print file names followed by a null character instead of the default newline.
+
+              •  This equals the -print0 option to GNU find(1).
+
+              •  Whatever  characters  in the file names, we can search the tree starting at the
+                 current directory by running something like (using GNU xargs(1)) `srch -0  pat‐
+                 tern | xargs -0P rm -f' to delete the matched files.
+
+       -w     Print out the total number of files/directories in the selected tree structure(s).
+
+              •  Equivalent to running `srch args | wc -l` as long as there is no file name con‐
+                 taining a newline.
+
+              •  This option may not be combined with -z (for  implementation  simplicity/execu‐
+                 tion speed).
+
+       -H     Print  out  the sum of the file sizes, in powers of 1024, of all the files encoun‐
+              tered.
+
+              •  Output is on a human-readable format, like `du -hs'.
+
+       -v count
+              Print out a progress line after every count files have been processed.
+
+       -u user
+              Search for files owned by specific user name or uid.
+
+              •  Any number of -u options are supported, up to command line limit.
+
+       -U user
+              Search for files NOT owned by specific user name or uid.
+
+              •  Any number of -U options are supported, up to command line limit.
+
+       -g group
+              Search for files owned by specific group name or gid.
+
+              •  Any number of -g options are supported, up to command line limit.
+
+       -G group
+              Search for files NOT owned by specific group name or gid.
+
+              •  Any number of -G options are supported, up to command line limit.
+
+       -o days
+              Only print out files older than days, i.e. modified more than days ago.
+
+       -O minutes
+              Only print out files older than minutes, i.e. modified more than minutes ago.
+
+       -P tstamp-file
+              Only print out files older than tstamp-file, i.e. modified before tstamp-file.
+
+       -y days
+              Only print out files younger than days, i.e. modified less than days ago.
+
+       -Y minutes
+              Only print out files younger than minutes, i.e. modified less than minutes ago.
+
+       -W tstamp-file
+              Only print out files younger than tstamp-file, i.e. modified after tstamp-file.
+
+       -s [+|-]size[k|m|g|t] | +size[k|m|g|t]:-size[k|m|g|t]
+              Only print out files with size equal to, bigger than (+) or smaller than (-)  size
+              bytes, kibibytes (k), mebibytes (m), gibibytes (g) or tebibytes (t).
+
+              •  No spaces between [+|-] and size and [k|m|g|t] are allowed.
+
+              •  Modifiers  +/-  include  the size given, e.g. -s+0 includes files of zero size,
+                 i.e. all files.
+
+              •  option -s+1 lists all non-zero files.
+
+              •  An interval can be specified using +size[k|m|g|t]:-size[k|m|g|t].
+
+              •  Only one -s option is currently supported.
+
+       -D count
+              Print out the path to the count directories containing the highest number of files
+              together with this number.
+
+              •  Note  that  if the highest number of files is found in several directories, and
+                 count is 1, the printed path is randomly chosen between these directories.  The
+                 same goes for any count.
+
+       -F count
+              Print  out  the  path  to  the  count biggest files together with the file size in
+              bytes.
+
+              •  May be combined with options -o/-O/-y/-Y. Particularly, -o days may  be  useful
+                 to find the biggest files older than a chosen number of days.
+
+              •  May  also  be  combined  with options -u/-U/-g/-G. Particularly, -U root may be
+                 useful to exclude files owned by root.
+
+              •  Note that if the biggest file size (default including directory sizes) is found
+                 several  times, and count is 1, the printed path is randomly chosen between the
+                 equally sized files.  The same goes for any count.
+
+       -M count
+              Print out the path to the count most recently modified files/directories  together
+              with the time stamp.
+
+              •  Note that if the same time stamp is found on several files, and count is 1, the
+                 printed path is randomly chosen between these.  The same goes for any count and
+                 identical time stamps.
+
+       -A count
+              Print  out the path to the count most recently accessed files/directories together
+              with the time stamp.
+
+              •  Same comment as for -M count.
+
+       -L count
+              Print out the path to the count least recently modified files/directories together
+              with the time stamp.
+
+              •  Same comment as for -M count.
+
+       -B count
+              Print out the path to the count least recently accessed files/directories together
+              with the time stamp.
+
+              •  Same comment as for -M count.
+
+       -R count
+              Print out the path to the count dirctories furthest from the root(s) together with
+              the depth.
+
+              •  Note  that  if there are several directories at an equal depth, and count is 1,
+                 the printed path is randomly chosen between  these.   The  same  goes  for  any
+                 count.
+
+       -I count
+              Use count as number of subdirectories in a directory, that should be processed in-
+              line instead of processing them in separate threads.
+
+              •  Default is to process up to two subdirectories in a directory in-line.
+
+              •  If there are no more than count subdirectories, all will be processed in-line.
+
+              •  If there are more than count subdirectories, say n in  total,  the  first  n  -
+                 count will be enqueued to avoid thread starvation.
+
+              •  This is a performance option to possibly squeeze out even faster run-times.
+
+              •  Use  0  for  processing every subdirectory in a separate thread, and no in-line
+                 processing.
+
+              •  A count less than zero can be used to process every  directory  in-line  in  -t
+                 threads, or default if -t is not specified.
+
+       -q     Organize the queue of directories as a FIFO which may be faster in some cases (de‐
+              fault is LIFO).
+
+              •  The speed difference between a LIFO and a FIFO queue is usually small.
+
+              •  Note that this option will use more memory.
+
+       -Q     Organize the queue of directories as a binary search tree sorted on inode number.
+
+              •  Using this option with a file system on a single (or mirrored) spinning disk is
+                 recommended, at least on Linux.
+
+              •  Using  it  on  a  lun  from a storage array or on SSD or FLASH disk is probably
+                 pointless.
+
+       -X     May be used to speed up srch'ing eXtremely big directories containing millions  of
+              files.
+
+              •  This  option  is  probably just useful when the big directories being traversed
+                 are cached in memory.
+
+              •  With this option, default maximum number of dirents read in one go is 100000.
+
+              •  Environment variable DIRENTS may be set to override the default.
+
+              •  This option is only supported on Linux and *BSD flavors.
+
+       -S     Print some stats to stderr when finished.
+
+       -T     Print the elapsed real time between invocation and termination of the  program  on
+              stderr, like time(1).
+
+       -V     Print out version and exit.
+
+       -h     Print this help text.
+
+USAGE
+       •  If no argument is specified, current directory (.) will be traversed, and all file and
+          directory names found, will be printed in no particular order.
+
+       •  If one argument (arg1) is specified, and this is a directory or a symlink to a  direc‐
+          tory, it will be traversed, and all file and directory names found, will be printed in
+          no particular order.
+
+       •  If one argument (arg1) is specified, and this is not a directory nor a  symlink  to  a
+          directory,  option  -N is assumed, and file names matching shell pattern "*arg1*" (ig‐
+          noring case) are searched for in current directory (including subdirs).
+
+       •  If more than one argument (arg1 arg2 ...) is specified, and the first is not a  direc‐
+          tory,  option  -N is assumed, and file names matching shell pattern "*arg1*" (ignoring
+          case) are searched for in remaining arguments "arg2", ....
+
+       •  Ambiguity warning: If something like `srch pat pat' is executed, and "pat" is a direc‐
+          tory,  all  the  files in the "pat" tree structure will silently be listed twice.  Use
+          option -n, -N or -i if the intention is to search for files/dirs matching "pat" in di‐
+          rectory "pat".
+
+       •  Options  [-F count | -M count | -A count | -L count | -B count] could slow down execu‐
+          tion considerably because they require an lstat(2) call for  every  file/directory  in
+          the specified directory tree(s).
+
+       •  Options  [-f]  [-d]  [-l] [-b] [-c] [-p] [-s] may be combined in any order.  Note that
+          using any of these might slow down the program considerably, at least on AIX/HP-UX/So‐
+          laris  because  lstat(2)  has  to be called for every file.  These options may also be
+          combined with one of [-D count | -F count | -M count | -A count | -L count | -B count]
+          to list out only files, directories etc.
+
+       •  The program has been tested on these file systems:
+
+          •  Linux: ext2, ext3, ext4, xfs, jfs, btrfs, nilfs2, f2fs, zfs, tmpfs
+
+             reiserfs, hfs plus, minix, bfs, ntfs (fuseblk), vxfs, gpfs
+
+          •  FreeBSD: ufs, zfs, devfs, ms-dos/fat
+
+          •  OpenBSD: ffs
+
+          •  NetApp (systemshell@FreeBSD): clusfs
+
+          •  MacOS: apfs
+
+          •  AIX: jfs, jfs2, ahafs
+
+          •  HP-UX: vxfs, hfs
+
+          •  Solaris: zfs, ufs, udfs
+
+          •  Windows: ntfs (MinGW, Cygwin)
+
+          •  All: nfs
+
+EXAMPLES
+       •  Example 1: Searching in the GNU findutils sources
+
+          ~/src/findutils-4.7.0# ls -F
+          ABOUT-NLS    ChangeLog     config.status*  doc/           GNUmakefile  locate/   Make‐
+          file.am  README          tests/             xargs/
+          aclocal.m4  config.h     configure*      find/          init.cfg      m4/        Make‐
+          file.in  README-hacking  THANKS
+          AUTHORS      config.h.in   configure.ac     gl/            INSTALL      maint.mk  NEWS
+          stamp-h1        TODO
+          build-aux/  config.log   COPYING          gnulib-tests/   lib/          Makefile   po/
+          stamp-h.in      tool-versions.txt
+
+          First,  search for a string (independent of case) throughout the current directory and
+          all subdirectories:
+
+          ~/src/findutils-4.7.0# srch find.c
+          ./find/oldfind.c
+          ./find/ftsfind.c
+
+          This is the fastest form, where any file/dir matching the shell expression *find.c* is
+          printed.
+
+          Next, search for a file name matching the exact string we type:
+
+          ~/src/findutils-4.7.0# srch -n ^find\$
+          ./find
+          ./tests/find
+          ./find/find
+          ~/src/findutils-4.7.0# find -name find
+          ./find
+          ./find/find
+          ./tests/find
+
+          Because of the parallel nature of srch, the output order is random. You might pipe the
+          output through sort(1) to make it "nicer".
+
+       •  Example 2: Count files matching shell pattern '*e*' starting from  current  directory,
+          and compare run-time with find(1) on an otherwise idle 40-CPU Cisco UCSC-C220-M4S run‐
+          ning RHEL 9.0 with an ext4 FS on a 110.8G SSD drive. Srch will by default use 8 of the
+          cores.
+
+          First, we give find(1) a try.
+
+          ~$ clearcache ; \time -p find -iname '*e*' | wc -l
+          real 337.78
+          user 72.37
+          sys 57.96
+          62053918
+
+          Then we try srch(1) with the default number of CPU cores.
+
+          ~$ clearcache ; \time -p srch -w e
+          62053918
+          real 38.49
+          user 11.74
+          sys 62.28
+
+          We can also test with twice as many CPU cores.
+
+          ~$ clearcache ; \time -p srch -wt16 e
+          62053918
+          real 22.15
+          user 12.84
+          sys 67.94
+
+          Instead of calling time(1), we can use the built-in timing functionality:
+
+          ~$ clearcache ; srch -wTt32 e
+          62053918
+          Real: 14.77 seconds
+
+          Option  -T is a simplified version of time(1).  This is particularly useful on Windows
+          unless you use PowerShell and Measure-Command.
+
+          "Measure-Command {$count=srch  -wt32  e};  Write-Host  $count}|Select-Object  Seconds"
+          should give the same on Windows.
+
+          The clearcache command used above is a small script containing 2 commands:
+
+          sync; echo 3 > /proc/sys/vm/drop_caches
+
+       •  Example  3: Count all files excluding directory .snapshot, on an NFS share from an old
+          NetApp, and compare run-time with find(1) on the same 40-CPU Cisco UCSC-C220-M4S  run‐
+          ning  RHEL  9.0 as in the previous example. Srch will use 8 of the cores unless option
+          -t is given.
+
+          ~$ clearcache ; \time -p srch -wZ
+          2230031
+          real 49.05
+          user 3.16
+          sys 42.02
+
+          ~$ clearcache ; \time -p find -name .snapshot -prune -o -print | wc -l
+          real 251.03
+          user 9.63
+          sys 48.38
+          2230031
+
+          The -Z option (equal to -E.snapshot) is always recommended when searching on  NAS  via
+          NFS.
+
+       •  Example  4: Find the 3 biggest files in a directory tree.  For a real heavy duty test,
+          we have a file system containing nearly 369 million files. This is a striped ext4 file
+          system,  consisting  of  two  110GiB SSD disks, on the same 40-CPU Cisco UCSC-C220-M4S
+          running RHEL 9.0 as in the previous examples, filled with empty versions of real  pro‐
+          duction  files.   3  big files (ff1, ff2, ff3) have been manually created using fallo‐
+          cate(1).  File systems containing this many files probably  aren't  mainstream  (yet),
+          but  serves  the  purpose  of  showing  the  capabilities of srch compared to standard
+          Linux/Unix utilities.
+
+          Instantly locating the fattest files can be particularly useful if we  notice  that  a
+          file  system is filling up, and we quickly want to see if there is a single file grow‐
+          ing endlessly.
+
+          First, count the files, and compare run-time with find + wc, to see the speed  differ‐
+          ence when utilizing 24 threads (srch) compared to 1 thread (find).
+
+          ~# df -h /mnt/stripe
+          Filesystem                  Size  Used Avail Use% Mounted on
+          /dev/mapper/striped-stripe  102G   24G   68G  26% /mnt/stripe
+          ~#
+          ~# clearcache ; \time -p srch -wt24 /mnt/stripe/bigtree
+          368928452
+          real 57.09
+          user 32.84
+          sys 227.84
+          ~#
+          ~# clearcache ; \time -p find /mnt/stripe/bigtree | wc -l
+          real 1005.88
+          user 144.81
+          sys 189.22
+          368928452
+
+          Observe  that  just  the  find part is timed here.  The wc part of the pipeline is not
+          covered by time, so the comparison with srch can be said to be "fair" since  there  is
+          no overhead from external utilities.
+
+          It is also interesting to compare with another fast, file finder, namely fd-find.
+
+          ~# clearcache ; \time -p fd -uu -j24 . /mnt/stripe/bigtree | wc -l
+          real 457.15
+          user 2639.26
+          sys 7461.55
+          368928451
+
+          Now,  locate  the three biggest files, using the -F3 option.  Note that this operation
+          is much slower than counting the files, because the program has to lstat(2)  each  and
+          every file to get the size.   Use option -f to just consider ordinary files.
+
+          ~# clearcache ; \time -p srch -fF3 /mnt/stripe/bigtree
+          104857600           /mnt/stripe/bigtree/archive/log/2018/64/11/59/ff1
+          209715200           /mnt/stripe/bigtree/archive/log/2018/64/11/52/ff2
+          314572800           /mnt/stripe/bigtree/archive/log/2018/69/10/42/ff3
+          real 1300.70
+          user 326.63
+          sys 8781.89
+
+          Using GNU find + sort + tail:
+
+          ~#  clearcache  ;  find  /mnt/stripe/bigtree -type f -printf "%s\t%p\n" | env LC_ALL=C
+          sort -nT/tmpsort | \time -p tail -3
+          104857600       /mnt/stripe/bigtree/archive/log/2018/64/11/59/ff1
+          209715200       /mnt/stripe/bigtree/archive/log/2018/64/11/52/ff2
+          314572800       /mnt/stripe/bigtree/archive/log/2018/69/10/42/ff3
+          real 4699.45
+          user 13.74
+          sys 12.86
+
+          Without the LC_ALL=C setting before calling sort, sorting may take a very  long  time.
+          Note  that time is placed before tail because the find command will finish long before
+          tail.
+
+       •  Example 5: Find the 3 most recently modified files.
+
+          To determine hot spots in the file system, we can use option -fMx to list  out  the  x
+          most recently updated files.
+
+          ~# clearcache ; \time -p srch -fM3 /mnt/stripe/bigtree
+          2022-08-04 08:10:44 /mnt/stripe/bigtree/archive/log/2018/64/11/59/ff1
+          2022-08-04 08:10:50 /mnt/stripe/bigtree/archive/log/2018/64/11/52/ff2
+          2022-08-04 08:10:57 /mnt/stripe/bigtree/archive/log/2018/69/10/42/ff3
+          real 1286.15
+          user 299.17
+          sys 8723.87
+          ~#
+          ~#  clearcache  ;  find  /mnt/stripe/bigtree  -type  f  -printf "%T+ %p\n" | sed 's/+/
+          /;s/\.[0-9]*//' | \
+          env LC_ALL=C sort -T/tmpsort | \time -p tail -3
+          2022-08-04 08:10:44 /mnt/stripe/bigtree/archive/log/2018/64/11/59/ff1
+          2022-08-04 08:10:50 /mnt/stripe/bigtree/archive/log/2018/64/11/52/ff2
+          2022-08-04 08:10:57 /mnt/stripe/bigtree/archive/log/2018/69/10/42/ff3
+          real 5970.59
+          user 11.58
+          sys 14.24
+
+          /tmpsort is a dedicated file system for the temporary files generated by sort.  It  is
+          created like this:
+
+          ~# mount -t tmpfs -o rw,nodev,nosuid,noexec,noatime,size=50G tmpfssort /tmpsort
+
+       •  Example 6: Find the 3 directories containing the highest number of files.
+
+          This can be particularly interesting when looking for the reason that a file system is
+          filling up or running out of inodes.  No lstat(2) is needed on the files this time, so
+          this is a much faster operation than the previous two examples.
+
+          ~# clearcache ; \time -p srch -t16 -D3 /mnt/stripe/bigtree
+          882315              /mnt/stripe/bigtree/archive/ArchiveFile/2021-11/26/15
+          971202              /mnt/stripe/bigtree/archive/ArchiveFile/2021-12/13/15
+          1166852             /mnt/stripe/bigtree/archive/ArchiveFile/2021-11/30/15
+          real 73.15
+          user 31.76
+          sys 220.40
+          ~#
+          ~# clearcache ; find /mnt/stripe/bigtree -type d -print0 | \
+          xargs -0n1 sh -c 'echo "$(find "$0" -maxdepth 1 | tail -n +2 | wc -l) $0"' | \
+          env LC_ALL=C sort -nT/tmpsort | \time -p tail -3
+          882315 /mnt/stripe/bigtree/archive/ArchiveFile/2021-11/26/15
+          971202 /mnt/stripe/bigtree/archive/ArchiveFile/2021-12/13/15
+          1166852 /mnt/stripe/bigtree/archive/ArchiveFile/2021-11/30/15
+          real 1899.39
+          user 0.01
+          sys 0.03
+
+          Maybe it would be faster using ls than find for listing all the files in a directory:
+
+          ~# clearcache ; find /mnt/stripe/bigtree -type d -print0 | \
+          xargs -0n1 sh -c 'echo "$(ls -AU "$0" | wc -l) $0"' | \
+          env LC_ALL=C sort -nT/tmpsort | \time -p tail -3
+          882315 /mnt/stripe/bigtree/archive/ArchiveFile/2021-11/26/15
+          971202 /mnt/stripe/bigtree/archive/ArchiveFile/2021-12/13/15
+          1166852 /mnt/stripe/bigtree/archive/ArchiveFile/2021-11/30/15
+          real 1834.21
+          user 0.01
+          sys 0.00
+
+          Nope, almost exactly the same.
+
+       •  Example 7: Finding disk usage like du(1).
+
+          ~# clearcache ; \time -p srch -H /mnt/stripe/bigtree
+          23.1G   /mnt/stripe/bigtree
+          real 1291.19
+          user 235.14
+          sys 8815.39
+          ~#
+          ~# clearcache ; \time -p du -hs /mnt/stripe/bigtree
+          24G     /mnt/stripe/bigtree
+          real 3307.76
+          user 316.93
+          sys 2089.41
+
+       •  Example 8: Playing with an idle IBM ESS array with real spindles.
+
+          ~# df -h /gpfs/gpfs0
+          Filesystem      Size  Used Avail Use% Mounted on
+          /dev/gpfs0      1,5P  8,1G  1,5P   1% /gpfs/gpfs0
+
+          Here we have about 130 million zero-sized test files.
+
+          ~# clearchache ; \time -p srch -w /gpfs/gpfs0/bigtree
+          130450061
+          real 1260.56
+          user 59.65
+          sys 265.01
+
+          We can probably count faster if we throw in some more threads.
+
+          ~# grep proc /proc/cpuinfo | wc -l
+          160
+
+          Adding  2 and 2 threads until the point where there is no longer any desired effect of
+          extra threads.
+
+          ~# clearcache ; \time -p srch -wt94 /gpfs/gpfs0/bigtree
+          130450061
+          real 209.65
+          user 112.67
+          sys 481.79
+
+          The best result is achieved with 94 threads on the  EMS  node  in  this  cluster,  and
+          209.65  seconds  is the average over 10 tests.  The expectation is that adding threads
+          will only be beneficial up to a certain  point,  after  which  the  overhead  of  more
+          threads  will  be  higher than the gain. This effect is clearly seen here.  Using more
+          than 94 threads just gives increased  run-times.   Using  160  threads  gives  real  =
+          214.95.
+
+          Let's  see what a single-threaded find can give.  Again we run 10 tests, and calculate
+          the average.
+
+          ~# clearcache ; \time -p find /gpfs/gpfs0/bigtree | wc -l
+          real 7715.57
+          user 108.27
+          sys 228.11
+          130450061
+
+          3.5 minutes for srch compared to 128.6 minutes for find(1) is almost 37 times  faster,
+          but CPU cost for srch is of course a lot higher than for find(1).
+
+       •  Example 9: Testing the -Q option on a spinning disk.
+
+          When  we  perform  a srch on a single or mirrored spinning disk, using the inode based
+          queueing algorithm might speed things up  considerably.   Here  we  use  an  old  3GHz
+          16-core SPARC T4-4 equipped with 4 x 600 GB internal disks.
+
+          ~# uname -a
+          SunOS sunbeam 5.11 11.3 sun4v sparc sun4v
+          ~#
+          ~# zfs list -r ipspool
+          NAME            USED  AVAIL  REFER  MOUNTPOINT
+          ipspool        84.7G   463G    31K  /ipspool
+          ipspool/depot  56.6G   463G  56.6G  /depot
+          ipspool/repo   28.1G   463G  28.1G  /repo
+          ~#
+          ~# zpool status ipspool
+            pool: ipspool
+           state: ONLINE
+            scan: resilvered 36.0G in 8m01s with 0 errors on Thu Nov 16 10:25:20 2017
+
+          config:
+
+                  NAME                       STATE     READ WRITE CKSUM
+                  ipspool                    ONLINE       0     0     0
+                    mirror-0                 ONLINE       0     0     0
+                      c0t5000CCA025ABAE24d0  ONLINE       0     0     0
+                      c0t5000CCA025B6FCB0d0  ONLINE       0     0     0
+
+          errors: No known data errors
+          ~#
+          ~# echo | format
+          Searching for disks...done
+          AVAILABLE DISK SELECTIONS:
+                 0. c0t5000CCA025AC3A84d0 <HITACHI-H106060SDSUN600G-A2B0-558.91GB>
+                    /scsi_vhci/disk@g5000cca025ac3a84
+                    /dev/chassis/SYS/MB/HDD0/disk
+                 1. c0t5000CCA025C551F4d0 <HITACHI-H106060SDSUN600G-A2B0-558.91GB>
+                    /scsi_vhci/disk@g5000cca025c551f4
+                    /dev/chassis/SYS/MB/HDD1/disk
+                 2. c0t5000CCA025ABAE24d0 <HITACHI-H106060SDSUN600G-A2B0-558.91GB>
+                    /scsi_vhci/disk@g5000cca025abae24
+                    /dev/chassis/SYS/MB/HDD2/disk
+                 3. c0t5000CCA025B6FCB0d0 <HITACHI-H106060SDSUN600G-A2B0-558.91GB>
+                    /scsi_vhci/disk@g5000cca025b6fcb0
+                    /dev/chassis/SYS/MB/HDD3/disk
+          Specify disk (enter its number): Specify disk (enter its number):
+          ~#
+          ~# zpool export ipspool ; zpool import ipspool ; \time find /repo | wc -l
+
+          real     1:46.2
+          user        2.1
+          sys        27.3
+            600326
+          ~#
+          ~# zpool export ipspool ; zpool import ipspool; \time srch -w /repo
+          600326
+          real       32.7
+          user        0.4
+          sys         2.3
+
+          Now, let's try the magical -Q option.
+
+          ~# zpool export ipspool ; zpool import ipspool ; \time srch -wQ /repo
+          600326
+          real       16.2
+          user        0.5
+          sys         2.5
+
+          We  can  see  a  similar  effect on a completely different architechture, an old HP-UX
+          server.
+
+          root@knoll /home/root# uname -a
+          HP-UX knoll B.11.31 U ia64 1234567890 unlimited-user license
+          root@knoll /home/root#
+          root@knoll /home/root# machinfo | head -4
+          CPU info:
+            2 Intel(R) Itanium 2 processors (1.6 GHz, 6 MB)
+                    400 MT/s bus, CPU version A1
+
+          root@knoll /home/root# umount /vxfs && mount /vxfs && \time find /vxfs | wc -l
+
+          real    15:47.1
+          user       24.6
+          sys      4:30.5
+          12254679
+          root@knoll /home/root# umount /vxfs && mount /vxfs && \time srch -w /vxfs
+          12254679
+
+          real     7:58.2
+          user       22.3
+          sys      1:22.0
+          root@knoll /home/root# umount /vxfs && mount /vxfs && \time srch -wQ /vxfs
+          12254679
+
+          real     5:53.5
+          user       25.6
+          sys      1:24.1
+
+          Also on AIX we can see the effect of the -Q option.
+
+          root@power8 /# uname -a
+          AIX power8 2 7 001122334400
+          root@power8 /# oslevel
+          7.2.0.0
+          root@power8 /# which find
+          /usr/bin/find
+          root@power8 /# what /usr/bin/find
+          /usr/bin/find:
+                  61       1.16   src/bos/usr/ccs/lib/libc/__threads_init.c,  libcthrd,   bos720
+          8/2/07 13:09:21
+                  40         1.83.23.5  src/bos/usr/bin/find/find.c, cmdscan, bos72V, v2020_28A1
+          6/29/20 13:14:38
+          root@power8 /# \echo "Arch: \c" && lsattr -El proc0 | awk '/type/ {print $2}'
+          Arch: PowerPC_POWER8
+          root@power8 /# \echo "CPU: \c" && lsdev -Ccprocessor | awk '{n+=1} END {printf  "%d  x
+          ", n}' && lsattr -El proc0 | awk '/freq/ {print int($2/1000/1000) "MHz"}'
+          CPU: 12 x 3891MHz
+          root@power8 /# uptime
+            09:09AM   up 33 days,  18:13,  1 user,  load average: 0.29, 0.40, 0.41
+          root@power8 /#
+          root@power8 /# umount /testfs ; mount /testfs ; \time find /testfs | wc -l
+
+          real   77.56
+          user   1.60
+          sys    14.15
+           2014158
+          root@power8 /# umount /testfs ; mount /testfs ; \time srch -w /testfs
+          2014158
+
+          real   53.24
+          user   2.36
+          sys    11.08
+          root@power8 /# umount /testfs ; mount /testfs ; \time srch -wQ /testfs
+          2014158
+
+          real   44.67
+          user   2.91
+          sys    10.73
+
+          Finally  we run some tests on an old, decommissioned IBM V7000 with only internal disk
+          left.
+
+          ~# dmidecode | grep 'IBM Sys'
+                  Product Name: IBM System x3650 M4: -[xxxxxxx]-
+          ~# uname -a
+          Linux mgmt001st001 2.6.32-358.41.1.el6.x86_64 #1 SMP Mon  Apr  21  15:58:42  EDT  2014
+          x86_64 x86_64 x86_64 GNU/Linux
+          ~# grep proc /proc/cpuinfo | wc -l
+          4
+          ~# find --version | head -1
+          find (GNU findutils) 4.4.2
+          ~# umount /mnt/ext4 ; mount /mnt/ext4 ; \time -p find /mnt/ext4 | wc -l
+          real 184.82
+          user 0.91
+          sys 3.39
+          341988
+          ~# umount /mnt/ext4 ; mount /mnt/ext4 ; \time -p srch -w /mnt/ext4
+          341988
+          real 93.52
+          user 0.62
+          sys 3.45
+          ~# umount /mnt/ext4 ; mount /mnt/ext4 ; \time -p srch -wQ /mnt/ext4
+          341988
+          real 15.70
+          user 0.56
+          sys 2.96
+
+          No  doubt  that  the  queue sorted on inode numbers gave best performance, at least in
+          these cases, but there is of course no guarantee that this is always the  case.   Par‐
+          ticularly, if the directory structure is cached in memory, the difference in run-times
+          will be low.
+
+CREDITS
+       •  The program contains code inspired by https://github.com/xaionaro/libpftw.
+
+       •  The program makes use of heap  algorithms  derived  from  https://gist.github.com/mar‐
+          tinkunev/1365481.
+
+       •  The  program  makes  direct  use of heap struct and a couple of routines from BusyBox'
+          `du' code, https://busybox.net.
+
+       •  The program makes use of a slightly modified version of https://github.com/coapp-pack‐
+          ages/libgnurx when being built for Windows (using MinGW on Linux).
+
+NOTES
+       •  Note  that  symlinks below the start point(s), pointing to directories, are never fol‐
+          lowed.
+
+       •  Warning: This program may impose a very high load on your storage systems when utiliz‐
+          ing many CPU cores.
+
+       •  The  "srch" program comes with ABSOLUTELY NO WARRANTY.  This is free software, and you
+          are welcome to redistribute it under certain conditions.  See the GNU  General  Public
+          Licence for details.
+
+SEE ALSO
+       find(1), locate(1), fd-find/fd(1), sort(1), time(1), xargs(1), wc(1), tail(1), du(1)
+
+AUTHOR
+       Srch was written by Jørn I. Viken, jornv@1337.no.
+
+                                                                                         SRCH(1)
