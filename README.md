@@ -4,7 +4,7 @@ For a long time I wasn't happy with the speed and functionality of the standard,
 
 In my eyes, srch is now the Swiss Army knife for exploring file tree structures quickly. It is written to be a fast, multi-threaded alternative to find(1), with simplified syntax and extended functionality.  While  find(1)  is  single-threaded, srch will by default use up to 8 CPU cores to search for files in parallel.  The basic idea is to handle each subdirectory as an independent unit, and feed a number of threads with these units.  Provided the underlying storage system is fast enough, this scheme will speed up file search considerably, and ultimately minimize the need for locate(1).
 
-Src might actually be the fastest publicly available file search tool - just test it and compare run-times with other tools (like fd-find) to see for yourself :)
+Src might actually be the fastest publicly available file search tool - just test it and compare run-times with other tools (like fd-find) to see for yourself :).
 
 Srch consists of a 900 line re-usable C library (commonlib.h) in addition to the specific 2000 lines main part.  Srch can be compiled for almost any Unix/Linux out of the box, but should be easy to tailor to Unix versions I don't have access to.  Building it for Windows requires a little more, and the necessary source code is located in the "win" subdirectory.  
 
