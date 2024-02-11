@@ -12,7 +12,7 @@ Srch consists of a 900 line re-usable library (commonlib.h) of functions written
 
 To build it for Unix/Linux, you just need gcc(1) or clang(1), and make(1).  Default compiler in the Makefile is gcc, but you may switch to clang instead.  Note that in my experience, gcc produces the fastest code.  Just try running "make".  If your Unix version isn't directly supported, you may try compiling it manually running "gcc -O2 srch.c -o srch -l pthread".
 
-To build it for Windows (if you are using a Linux machine), run "make win".  You need to have mingw-w64, mingw-w64-common and mingw-w64-x86-64-dev installed to be able to compile for 64-bit Windows, and additionally mingw-w64-i686-dev to compile for 32-bit.  Srch can also be directly compiled on Windows using Cygwin.
+To build it for Windows (when you are using a Linux machine), run "make win".  You need to have mingw-w64, mingw-w64-common and mingw-w64-x86-64-dev installed to be able to compile for 64-bit Windows, and additionally mingw-w64-i686-dev to compile for 32-bit.  Srch can also be directly compiled on Windows using Cygwin.
 
 You may run "make test" to perform a few tests where output from srch and find(1) are compared.
 
