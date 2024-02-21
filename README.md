@@ -8,7 +8,7 @@ Srch is now my Swiss Army knife for exploring file tree structures quickly. It i
 
 Srch might actually be the fastest publicly available file search tool - just test it and compare run-times with other tools (like fd-find) to see for yourself :).
 
-Srch consists of a 900 line re-usable library (commonlib.h) of functions written in C, in addition to the 2000 lines specific part in srch.c.  Srch can be compiled for almost any Unix/Linux out of the box, but should be easy to tailor to Unix versions I don't have access to.  Building it for Windows requires a little more, and the necessary source code is located in the "win" subdirectory.  
+Srch consists of a 900 line re-usable library (commonlib.h) of functions written in C, in addition to the 2000 lines specific part in srch.c.  Srch can be compiled for common Unix/Linux versions out of the box, but should be easy to tailor to Unix versions I don't have access to.  Building it for Windows requires a little more, and the necessary source code is located in the "win" subdirectory.  
 
 To build it for Unix/Linux, you just need gcc(1) or clang(1), and make(1).  Default compiler in the Makefile is gcc, but you may switch to clang instead.  Note that in my experience, gcc produces the fastest code.  Just try running "make".  If your Unix version isn't directly supported, you may try compiling it manually running "gcc -O2 srch.c -o srch -l pthread".
 
