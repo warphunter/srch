@@ -14,7 +14,7 @@ Examples of extended functionlity:
 
 -Fx for listing the x biggest files.
 
--Mx for listing the most recently updated files/directories.
+-Mx for listing the x most recently updated files/directories.
 
 Srch might actually be the fastest publicly available file search tool - just test it and compare run-times with other tools (like fd-find) to see for yourself :).
 
