@@ -16,8 +16,6 @@ Examples of srch' extended functionality:
 
 -Mx for listing the x most recently updated files/directories.
 
-Srch might actually be the fastest publicly available file search tool - just test it and compare run-times with other tools (like fd-find) to see for yourself :).
-
 Srch consists of a 900 line re-usable library (commonlib.h) of functions written in C, in addition to the 2000 lines specific part in srch.c.  Srch can be compiled for common Unix/Linux versions out of the box, but should be easy to tailor to Unix versions I don't have access to.  Building it for Windows requires a little more, and the necessary source code is located in the "win" subdirectory.  
 
 To build it for Unix/Linux, you just need gcc(1) or clang(1), and make(1).  Default compiler in the Makefile is gcc, but you may switch to clang instead.  Note that in my experience, gcc produces the fastest code.  Just try running "make".  If your Unix version isn't directly supported, you may try compiling it manually running "gcc -O2 srch.c -o srch -l pthread".
@@ -31,3 +29,5 @@ You may run "make install" to copy the binary to /usr/local/bin and the man page
 In the manual page srch.1 (or in srch.man which is preformatted), you will find lots of examples and speed comparisons with find(1).
 
 Srch is tested and supported on Linux, FreeBSD, OpenBSD, MacOS, AIX, HP-UX, Solaris, Windows.  You can use MinGW on Linux to compile it for Windows, or Cygwin directly on Windows.  You can even compile it on a matching FreeBSD release and run it under the hood (in the system shell) of a NetApp cDOT node.  To find the right FreeBSD version, you can run "file /bin/cat" in the NetApp system shell. After compilation and copying the resulting FreeBSD srch binary to the /var/home/diag/bin folder (which are already included in the PATH) on your NetApp node, you are ready to srch through the various virtual file servers (SVMs) under the /clus mount point.
+
+Srch may actually be the fastest publicly available file search tool - just test it and compare run-times with other tools (like fd-find) to see for yourself :).
