@@ -8,7 +8,7 @@ Srch is now my Swiss Army knife for exploring file tree structures quickly. It i
 
 Examples of srch' extended functionality:
 
--Dx for listing the x directories containing most files.  Useful if a file system is running out of inodes, and you are in a hurry to clean up.
+-Dx for listing the x directories containing most files.  Useful if a file system is running out of inodes, and you need to find out where all of them are located, possibly to clean up.
 
 -Fx for listing the x biggest files.  Useful when a file system is filling up, and you don't know which files are causing it.
 
