@@ -8,13 +8,13 @@ Srch is now my Swiss Army knife for exploring file tree structures quickly. It i
 
 Examples of srch' extended functionality:
 
+-Dx for listing the x directories containing most files.  Useful if a file system is running out of inodes, and you are in a hurry to clean up.
+
+-Fx for listing the x biggest files.  Useful when a file system is filling up, and you don't know which files are causing it.
+
+-Mx for listing the x most recently updated files/directories.  Useful for finding hot spots in the file system.
+
 -H for summarizing disk usage, like du -hs.
-
--Dx for listing the x directories containing most files.
-
--Fx for listing the x biggest files.
-
--Mx for listing the x most recently updated files/directories.
 
 Srch consists of a 900 line re-usable library (commonlib.h) of functions written in C, in addition to the 2000 lines specific part in srch.c.  Srch can be compiled for common Unix/Linux versions out of the box, but should be easy to tailor to Unix versions I don't have access to.  Building it for Windows requires a little more, and the necessary source code is located in the "win" subdirectory.  
 
