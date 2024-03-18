@@ -131,8 +131,6 @@ OPTIONS
 
               •  This equals options "-type d -empty" to GNU find(1).
 
-              •  This also equals 'srch -ds0', but is much faster because of fewer lstat(2) calls.
-
               •  Apart from the exclude and age options, -z can only be combined with a few others, like -m/-x/-j/-0/-r.
 
        -j     Prepend filenames with modtime details.
