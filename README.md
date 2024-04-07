@@ -2,7 +2,7 @@
 
 For a long time I wasn't happy with the speed and functionality of the standard find(1) utility included in Unix/Linux, and the syntax is sadly quite different from most other Unix utilities.  Since find(1) was first written about 45 years ago, in 1979 for Unix V7, computer hardware has evolved almost miraculously.  In the first decades after Unix' invention, CPU resources were scarce and disks were small and slow.
 
-Nowadays we have a completely different setting, where there are no longer any single-CPU computers around, and disks almost as fast as RAM are mainstream, and files are more numerous than trees in the forests.  Managing file servers with tens of millions of files, I needed a tool faster and more flexible than find(1), preferably with more desirable syntax, running on all available Unix platforms, so I decided to write it myself (although I'm not a professional programmer :).
+Nowadays we have a completely different setting, where there are no longer any single-CPU computers around, and disks almost as fast as RAM are mainstream, and files are more numerous than trees in the forests.  Managing file servers with tens of millions of files, I needed a tool faster and more flexible than find(1), preferably with more desirable syntax, easy to compile on all available Unix platforms, so I decided to write it myself (although I'm not a professional programmer :).
 
 Here is a fun story about the origin of find(1): http://doc.cat-v.org/unix/find-history
 
@@ -32,4 +32,4 @@ In the manual page srch.1 (or in srch.man which is preformatted), you will find 
 
 Srch is tested and supported on Linux, FreeBSD, OpenBSD, MacOS, AIX, HP-UX, Solaris, Windows.  As mentioned, you can use MinGW on Linux to compile it for Windows, or Cygwin directly on Windows.  You can even compile it on a matching FreeBSD release and run it under the hood (in the system shell) of a NetApp cDOT node.  To find the right FreeBSD version, you can run "file /bin/cat" in the NetApp system shell. After compilation and copying the resulting FreeBSD srch binary to the /var/home/diag/bin folder (which are already included in the PATH) on your NetApp node, you are ready to srch through the various virtual file servers (SVMs) under the /clus mount point.
 
-Srch may actually be the fastest publicly available file search tool in this solar system - just test it and compare run-times with other tools (like fd-find) to see for yourself :)
+Srch may actually be the fastest publicly available file search tool in this solar system :D- Just test it and compare run-times with other tools (like fd-find) to see for yourself :)
