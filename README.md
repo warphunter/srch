@@ -1,6 +1,6 @@
 # srch
 
-For a long time I wasn't happy with the speed and functionality of the standard find(1) utility included in Unix/Linux, and the syntax is sadly quite different from most other Unix utilities.  Since find(1) was first written about 45 years ago, in 1979 for Unix V7, computer hardware has evolved almost miraculously.  In the first decades after Unix' invention, CPU resources were scarce and disks were small and slow.
+For a long time I wasn't happy with the speed and functionality of the standard find(1) utility included in Unix/Linux, and the syntax is sadly quite different from most other Unix utilities.  Since find(1) was first written about 45 years ago, in 1979 for Unix V7, as a grep(1) for file systems, computer hardware has evolved almost miraculously.  In the first decades after Unix' invention, CPU resources were scarce and disks were small and slow.
 
 Nowadays we have a completely different setting, where there are no longer any single-CPU computers around (except in my lab ;), and disks almost as fast as RAM are mainstream, and files are more numerous than trees in the forests. Waiting for find(1) to search for the needle in the haystack was getting more and more painful.  Managing file servers with tens of millions of files, I needed a tool faster and more flexible than find(1), preferably with more desirable syntax, and easy to compile on all available Unix platforms, so I decided to write it myself (although I'm not a professional programmer :).
 
