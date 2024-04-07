@@ -2,11 +2,11 @@
 
 For a long time I wasn't happy with the speed and functionality of the standard find(1) utility included in Unix/Linux, and the syntax is sadly quite different from most other Unix utilities.  Since find(1) was first written about 45 years ago, in 1979 for Unix V7, computer hardware has evolved almost miraculously.  In the first decades after Unix' invention, CPU resources were scarce and disks were small and slow.
 
-Nowadays we have a completely different setting, where there are no longer any single-CPU computers around, and disks almost as fast as RAM are mainstream, and files are more numerous than trees in the forests.  Managing file servers with tens of millions of files, I needed a tool faster and more flexible than find(1), preferably with more desirable syntax, and decided to write it myself (although I'm not a professional programmer :).
+Nowadays we have a completely different setting, where there are no longer any single-CPU computers around, and disks almost as fast as RAM are mainstream, and files are more numerous than trees in the forests.  Managing file servers with tens of millions of files, I needed a tool faster and more flexible than find(1), preferably with more desirable syntax, running on all available Unix platforms, so I decided to write it myself (although I'm not a professional programmer :).
 
 Here is a fun story about the origin of find(1): http://doc.cat-v.org/unix/find-history
 
-Srch is now my Swiss Army knife for exploring file tree structures quickly. It is written to be a fast, multi-threaded alternative to find(1), with simplified syntax and extended functionality.  While  find(1)  is  single-threaded, srch will by default use up to 8 CPU cores to search for files in parallel.  The basic idea is to handle each subdirectory as an independent unit, and feed a number of threads with these units.  Provided the underlying storage system is fast enough, this scheme will speed up file search considerably, and ultimately minimize the need for locate(1).
+After having a simple, file listing tool ready for production early 2020, srch is now my Swiss Army knife for exploring file tree structures quickly. It is written to be a fast, multi-threaded alternative to find(1), with simplified syntax and extended functionality.  While  find(1)  is  single-threaded, srch will by default use up to 8 CPU cores to search for files in parallel.  The basic idea is to handle each subdirectory as an independent unit, and feed a number of threads with these units.  Provided the underlying storage system is fast enough, this scheme will speed up file search considerably, and ultimately minimize the need for locate(1).
 
 Examples of srch' extended functionality:
 
