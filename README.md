@@ -6,7 +6,7 @@ Nowadays we have a completely different setting, where there are no longer any s
 
 Here is a fun story about the origin of find(1): http://doc.cat-v.org/unix/find-history
 
-After having a simple file listing tool ready for production early 2020, srch is now my Swiss Army knife for exploring file tree structures quickly. It is written to be a fast, multi-threaded alternative to find(1), with simplified syntax and extended functionality.  While  find(1)  is  single-threaded, srch will by default use up to 8 CPU cores to search for files in parallel.  The basic idea is to handle each subdirectory as an independent unit, and feed a number of threads with these units.  Provided the underlying storage system is fast enough, this scheme will speed up file search considerably, and ultimately minimize the need for locate(1).
+After having a simple file listing tool ready for production early 2020, srch is now my Swiss Army knife for exploring, and possibly modifying, file tree structures quickly. It is written to be a fast, multi-threaded alternative to find(1), with simplified syntax and extended functionality.  While  find(1)  is  single-threaded, srch will by default use up to 8 CPU cores to search for files in parallel.  The basic idea is to handle each subdirectory as an independent unit, and feed a number of threads with these units.  Provided the underlying storage system is fast enough, this scheme will speed up file search considerably, and ultimately minimize the need for locate(1).
 
 Examples of srch' extended functionality:
 
