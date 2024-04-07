@@ -32,6 +32,6 @@ In the manual page srch.1 (or in srch.man which is preformatted), you will find 
 
 Srch is tested and supported on Linux, FreeBSD, OpenBSD, MacOS, AIX, HP-UX, Solaris, Windows.  As mentioned, you can use MinGW on Linux to compile it for Windows, or Cygwin directly on Windows.  You can even compile it on a matching FreeBSD release and run it under the hood (in the system shell) of a NetApp cDOT node.  To find the right FreeBSD version, you can run "file /bin/cat" in the NetApp system shell. After compilation and copying the resulting FreeBSD srch binary to the /var/home/diag/bin folder (which is already included in the PATH) on your NetApp node, you are ready to srch through the various virtual file servers (SVMs) under the /clus mount point.
 
-Srch may actually be the fastest publicly available file search tool in this solar system :D. Just test it and compare run-times with other tools (like fd-find) to see for yourself!
+Srch may actually be the fastest publicly available file search tool in this solar system :D. Just test it and compare run-times with similar tools (like fd-find) to see for yourself!
 
 You may also check out my other muti-threaded tools: rmtree, chmodtree and chowntree
