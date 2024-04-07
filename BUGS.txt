@@ -1,0 +1,3 @@
+None known, but when being used with option combinations I haven't tested or thought about,
+or on platforms which are less thoroughly tested (Linux is the development platform),
+the output may be less satisfactory than expected.
