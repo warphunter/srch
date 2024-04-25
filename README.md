@@ -9,6 +9,8 @@ Here is a fun story about the origin of find(1): http://doc.cat-v.org/unix/find-
 After having a fast but simple file listing tool ready for production early 2020, srch is now my Swiss Army knife for exploring, and possibly modifying, file tree structures quickly. Over the years it has evolved to be a real alternative to find(1), with simplified syntax and extended functionality, although GNU find(1) is still the king of options :D.
 
 While  find(1)  is  single-threaded, srch will by default use up to 8 CPU cores to search for files in parallel.  The basic idea is to handle each subdirectory as an independent unit, and feed a number of threads with these units.  Provided the underlying storage system is fast enough, this scheme will speed up file search considerably, and ultimately minimize the need for locate(1).
+ 
+Srch is not only fast because of multi-threading, but also because lstat(2) system calls are only used when absolutely needed.  On Linux, *BSD and in MacOS, the file type is included in the "dirent" struct when using readdir(3), so an extra lstat(2) is not needed to determine the type of the file at hand.
 
 Examples of srch' extended functionality:
 
