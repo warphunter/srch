@@ -38,4 +38,4 @@ Srch is tested and supported on Linux, FreeBSD, OpenBSD, MacOS, AIX, HP-UX, Sola
 
 Srch may actually be the fastest publicly available file search tool in this solar system :D. Just test it and compare run-times with similar tools (like fd-find) to see for yourself!
 
-You may also check out my other muti-threaded tools: rmtree, chmodtree and chowntree
+You may also check out my other muti-threaded tools, using the same traversal algorithm as srch: rmtree, chmodtree and chowntree
